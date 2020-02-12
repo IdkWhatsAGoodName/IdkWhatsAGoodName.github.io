@@ -6,6 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 let spell;
+let scalar = 1.0;
 function preload(){
   spell = loadImage("assets/Rune Circle.jpg");
 }
@@ -16,5 +17,14 @@ function setup() {
 
 function draw() {
   background(220);
-  image(spell, mouseX, mouseY, 300, 300);
+  image(spell, mouseX-0.5*scalar*spell.width, mouseY-0.5*scalar*spell.height, scalar*spell.width, scalar*spell.height);
+}
+
+function mouseWheel(event){
+  if(event.delta < 0){
+    scalar *= 1.1;
+  }
+  else if(event.delta > 0){
+    scalar *= 0.9;
+  }
 }
