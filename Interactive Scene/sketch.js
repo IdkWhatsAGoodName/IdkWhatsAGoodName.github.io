@@ -1,5 +1,5 @@
-// Project Title
-// Your Name
+// Interactive Scene - Definitely Thermodynamic Bouncy Ball
+// Ray Dai
 // Date
 //
 // Extra for Experts:
@@ -19,11 +19,20 @@ let top_border;
 let bottom_border;
 
 function preload(){
+  // load the ball sprite
   bouncy = loadImage("assets/bouncy_ball.png");
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  
+  // define the borders of the ball's movement
+  left_border = 0;
+  right_border = windowWidth - bouncy.width;
+  top_border = 0;
+  bottom_border = windowHeight - bouncy.height;
+  
+  // place the ball at the center
   x_cord = windowWidth/2 - bouncy.width/2;
   y_cord = windowHeight/2 - bouncy.height/2;
 }
@@ -36,7 +45,7 @@ function draw() {
 
 function moveBall() {
   y_velocity += gravity;
-  if(x_cord + x_velocity > bouncy.width/2 && x_cord + x_velocity < windowWidth - bouncy.width/2 && y_cord + y_velocity > bouncy.height && y_cord + y_velocity < windowHeight - bouncy.height){
+  if(x_cord + x_velocity > bouncy.width/2 && x_cord + x_velocity < windowWidth - bouncy.width/2 && y_cord + y_velocity > bouncy.height && y_cord + y_velocity < windowHeight - bouncy.height/2){
     x_cord += x_velocity;
     y_cord += y_velocity;
   }
