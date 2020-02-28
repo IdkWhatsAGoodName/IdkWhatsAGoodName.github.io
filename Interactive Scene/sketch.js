@@ -6,7 +6,7 @@
 // - describe what you did to take this project "above and beyond"
 
 let bouncy;
-let gravity = 0.98;
+let gravity = 0;
 
 let xCord = 0;
 let yCord = 0;
@@ -18,6 +18,9 @@ let leftBorder;
 let rightBorder;
 let topBorder;
 let bottomBorder;
+
+let nextXCord;
+let nextYCord;
 
 function preload(){
   // load the ball sprite
@@ -34,43 +37,63 @@ function setup() {
   bottomBorder = windowHeight - bouncy.height;
   
   // place the ball at the center
-  xCord = windowWidth/2 - leftBorder;
+  xCord = windowWidth/2 - bouncy.width/2;
   yCord = windowHeight/2 - bouncy.height/2;
+
+  xVelocity = 10;
+  yVelocity = 10;
 }
 
 // move ball
 function draw() {
   background(220);
   moveBall();
-  image(bouncy, xCord, yCord);
+  if(Math.abs(xVelocity) <= windowWidth || Math.abs(yVelocity) <= windowHeight){
+    image(bouncy, xCord, yCord);
+    console.log(xVelocity,yVelocity);
+  }
 }
 
 function moveBall() {
-
   // gravity accelerates ball downwards 
   yVelocity += gravity;
   
   // map out the location of the ball after moving
-  let nextXCord = xCord + xVelocity;
-  let nextYCord = yCord + yVelocity;
+  nextXCord = xCord + xVelocity;
+  nextYCord = yCord + yVelocity;
   
   // if ball isn't about to run into a border, move ball in straight line
-  if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord > bottomBorder && nextYCord < bottomBorder){
+  if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord > topBorder && nextYCord < bottomBorder){
     xCord += xVelocity;
     yCord += yVelocity;
+  }
+
+  // ball bouncing off top border
+  else if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord <= topBorder){
+    xCord += xVelocity;
+    yCord =  topBorder;
+    yVelocity = -1.1 * yVelocity;
+  }
+  
+  // ball bouncing off bottom border
+  else if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord >= bottomBorder){
+    xCord += xVelocity;
+    yCord =  bottomBorder;
+    yVelocity = -1.1 * yVelocity;
   }
   
   // ball bouncing off left border
   else if(nextXCord <= leftBorder && nextYCord > topBorder && nextYCord < bottomBorder){
     xCord = leftBorder;
     yCord += yVelocity;
-    xVelocity = -xVelocity;
+    xVelocity = -1.1 * xVelocity;
   }
-
-  // ball bouncing off bottom border
-  else if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord > bottomBorder){
-    xCord += xVelocity;
-    yCord =  bottomBorder;
-    yVelocity = -yVelocity;
+  
+  // ball bouncing off right border
+  else if(nextXCord >= rightBorder && nextYCord > topBorder && nextYCord < bottomBorder){
+    xCord = rightBorder;
+    yCord += yVelocity;
+    xVelocity = -1.1 * xVelocity;
   }
+  
 }
