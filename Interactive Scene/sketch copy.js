@@ -48,7 +48,7 @@ function setup() {
 function draw() {
   background(220);
   // move ball
-  if(Math.abs(xVelocity) <= windowWidth && Math.abs(yVelocity) <= windowHeight){
+  if(Math.abs(xVelocity) <= windowWidth || Math.abs(yVelocity) <= windowHeight){
     moveBall();
     image(bouncy, xCord, yCord);
     console.log(xVelocity, windowWidth, yVelocity, windowHeight);
@@ -71,41 +71,30 @@ function moveBall() {
 
   // ball bouncing off top border
   else if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord <= topBorder){
-    xCord += xVelocity / yVelocity * (topBorder - yCord);
+    xCord += xVelocity;
     yCord =  topBorder;
     yVelocity = -1.1 * yVelocity;
   }
   
   // ball bouncing off bottom border
   else if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord >= bottomBorder){
-    xCord += xVelocity / yVelocity * (bottomBorder - yCord);
+    xCord += xVelocity;
     yCord =  bottomBorder;
     yVelocity = -1.1 * yVelocity;
   }
   
   // ball bouncing off left border
   else if(nextXCord <= leftBorder && nextYCord > topBorder && nextYCord < bottomBorder){
-    yCord += yVelocity / xVelocity * (leftBorder - xCord);
     xCord = leftBorder;
+    yCord += yVelocity;
     xVelocity = -1.1 * xVelocity;
   }
   
   // ball bouncing off right border
   else if(nextXCord >= rightBorder && nextYCord > topBorder && nextYCord < bottomBorder){
-    yCord += yVelocity / xVelocity * (rightBorder - xCord);
     xCord = rightBorder;
+    yCord += yVelocity;
     xVelocity = -1.1 * xVelocity;
   }
   
-  
-  // //ball running into right wall...
-  // else if(nextXCord >= rightBorder){
-  //   // ... and not running into top or bottom wall
-  //   if(nextYCord > topBorder && nextYCord < bottomBorder){
-  //     //horizontal bounce, vertical position increased using similarity 
-  //     yCord += yVelocity / xVelocity * (rightBorder - xCord);
-  //     xCord = rightBorder;
-  //     xVelocity = -1.1 * xVelocity;
-  //   }
-  // }
 }
