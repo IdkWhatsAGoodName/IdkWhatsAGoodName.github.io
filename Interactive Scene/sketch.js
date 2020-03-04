@@ -6,10 +6,10 @@
 // - describe what you did to take this project "above and beyond"
 
 let bouncy;
-let bounceCoefficient = -1.1;
+let bounceCoefficient = -1.01;
 
-let gravityX = 0;
-let gravityY = 0;
+let gravityX;
+let gravityY;
 
 let xCord = 0;
 let yCord = 0;
@@ -43,18 +43,22 @@ function setup() {
   xCord = windowWidth/2 - bouncy.width/2;
   yCord = windowHeight/2 - bouncy.height/2;
 
-  xVelocity = 10;
-  yVelocity = 11;
+  xVelocity = 0;
+  yVelocity = 0;
 }
 
 
 function draw() {
   background(220);
-  // move ball
+  // move ball if the ball is not moving too fast
   if(Math.abs(xVelocity) <= windowWidth && Math.abs(yVelocity) <= windowHeight){
+    gravityX = random(-5,5);
+    gravityY = random(-5,5);
     moveBall();
     image(bouncy, xCord, yCord);
-    console.log(xVelocity, windowWidth, yVelocity, windowHeight);
+    if(mouseX >= xCord && mouseX <= xCord + bouncy.width && mouseY >= yCord && mouseY <= yCord + bouncy.height){
+      noLoop();
+    }
   }
 }
 
@@ -74,31 +78,42 @@ function moveBall() {
   }
 
   // ball running into left wall
-  else if (nextXCord < leftBorder && Math.abs(xVelocity) > Math.abs(yVelocity)){
-    yCord += yVelocity / xVelocity * (leftBorder - xCord);
-    xCord = leftBorder;
-    xVelocity = xVelocity * bounceCoefficient;
+  else if (nextXCord < leftBorder){
+    nextYCord = yCord + yVelocity / xVelocity * (leftBorder - xCord);
+    if(nextYCord > topBorder && nextYCord < bottomBorder){
+      xCord = leftBorder;
+      yCord = nextYCord;
+      xVelocity = xVelocity * bounceCoefficient;
+    }
   }
 
   // ball running into right wall
-  else if(nextXCord > rightBorder && Math.abs(xVelocity) > Math.abs(yVelocity)){
-    yCord += yVelocity / xVelocity * (rightBorder - xCord);
-    xCord = rightBorder;
-    xVelocity = xVelocity * bounceCoefficient;
+  else if(nextXCord > rightBorder){
+    nextYCord = yCord + yVelocity / xVelocity * (rightBorder - xCord);
+    if(nextYCord > topBorder && nextYCord < bottomBorder){
+      xCord = rightBorder;
+      yCord = nextYCord;
+      xVelocity = xVelocity * bounceCoefficient;
+    }
   }
 
   // ball running into ceiling (top wall)
-  else if(nextYCord <= topBorder && Math.abs(yVelocity) > Math.abs(xVelocity)){
-    xCord += xVelocity / yVelocity * (topBorder - yCord);
-    yCord = topBorder;
-    yVelocity = yVelocity * bounceCoefficient;
+  else if(nextYCord <= topBorder){
+    nextXCord = xCord +  xVelocity / yVelocity * (topBorder - yCord);
+    if(nextXCord > leftBorder && nextXCord < rightBorder){
+      xCord = nextXCord;
+      yCord = topBorder;
+      yVelocity = yVelocity * bounceCoefficient;
+    }
   }
 
   // ball running into floor (bottom wall)
-  else if(nextYCord >= bottomBorder && Math.abs(yVelocity) > Math.abs(xVelocity)){
-    xCord += xVelocity / yVelocity * (bottomBorder - yCord);
-    yCord = bottomBorder;
-    yVelocity = yVelocity * bounceCoefficient;
+  else if(nextYCord >= bottomBorder){
+    nextXCord = xCord + xVelocity / yVelocity * (bottomBorder - yCord);
+    if(nextXCord > leftBorder && nextXCord < rightBorder){
+      xCord = nextXCord;
+      yCord = bottomBorder;
+      yVelocity = yVelocity * bounceCoefficient;
+    }
   }
-
 }

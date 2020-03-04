@@ -1,5 +1,3 @@
-
-
 // Interactive Scene - Definitely Thermodynamic Bouncy Ball
 // Ray Dai
 // Date
@@ -8,7 +6,10 @@
 // - describe what you did to take this project "above and beyond"
 
 let bouncy;
-let gravity = 0;
+let bounceCoefficient = -1.1;
+
+let gravityX;
+let gravityY;
 
 let xCord = 0;
 let yCord = 0;
@@ -42,15 +43,17 @@ function setup() {
   xCord = windowWidth/2 - bouncy.width/2;
   yCord = windowHeight/2 - bouncy.height/2;
 
-  xVelocity = 10;
-  yVelocity = 10;
+  xVelocity = 0;
+  yVelocity = 0;
 }
 
 
 function draw() {
   background(220);
-  // move ball
-  if(Math.abs(xVelocity) <= windowWidth || Math.abs(yVelocity) <= windowHeight){
+  // move ball if the ball is not moving too fast
+  if(Math.abs(xVelocity) <= windowWidth && Math.abs(yVelocity) <= windowHeight){
+    gravityX = random(-1,1);
+    gravityY = random(-1,1);
     moveBall();
     image(bouncy, xCord, yCord);
     console.log(xVelocity, windowWidth, yVelocity, windowHeight);
@@ -58,45 +61,57 @@ function draw() {
 }
 
 function moveBall() {
-  // gravity accelerates ball downwards 
-  yVelocity += gravity;
+  // gravity accelerates ball
+  xVelocity += gravityX;
+  yVelocity += gravityY;
   
   // map out the location of the ball after moving
   nextXCord = xCord + xVelocity;
   nextYCord = yCord + yVelocity;
   
-  // if ball isn't about to run into a border, move ball in straight line
+  // ball not running into a side wall
   if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord > topBorder && nextYCord < bottomBorder){
     xCord += xVelocity;
     yCord += yVelocity;
   }
 
-  // ball bouncing off top border
-  else if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord <= topBorder){
-    xCord += xVelocity;
-    yCord =  topBorder;
-    yVelocity = -1.1 * yVelocity;
+  // ball running into left wall
+  else if (nextXCord < leftBorder){
+    nextYCord = yCord + yVelocity / xVelocity * (leftBorder - xCord);
+    if(nextYCord > topBorder && nextYCord < bottomBorder){
+      xCord = leftBorder;
+      yCord = nextYCord;
+      xVelocity = xVelocity * bounceCoefficient;
+    }
   }
-  
-  // ball bouncing off bottom border
-  else if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord >= bottomBorder){
-    xCord += xVelocity;
-    yCord =  bottomBorder;
-    yVelocity = -1.1 * yVelocity;
+
+  // ball running into right wall
+  else if(nextXCord > rightBorder){
+    nextYCord = yCord + yVelocity / xVelocity * (rightBorder - xCord);
+    if(nextYCord > topBorder && nextYCord < bottomBorder){
+      xCord = rightBorder;
+      yCord = nextYCord;
+      xVelocity = xVelocity * bounceCoefficient;
+    }
   }
-  
-  // ball bouncing off left border
-  else if(nextXCord <= leftBorder && nextYCord > topBorder && nextYCord < bottomBorder){
-    xCord = leftBorder;
-    yCord += yVelocity;
-    xVelocity = -1.1 * xVelocity;
+
+  // ball running into ceiling (top wall)
+  else if(nextYCord <= topBorder){
+    nextXCord = xCord +  xVelocity / yVelocity * (topBorder - yCord);
+    if(nextXCord > leftBorder && nextXCord < rightBorder){
+      xCord = nextXCord;
+      yCord = topBorder;
+      yVelocity = yVelocity * bounceCoefficient;
+    }
   }
-  
-  // ball bouncing off right border
-  else if(nextXCord >= rightBorder && nextYCord > topBorder && nextYCord < bottomBorder){
-    xCord = rightBorder;
-    yCord += yVelocity;
-    xVelocity = -1.1 * xVelocity;
+
+  // ball running into floor (bottom wall)
+  else if(nextYCord >= bottomBorder){
+    nextXCord = xCord + xVelocity / yVelocity * (bottomBorder - yCord);
+    if(nextXCord > leftBorder && nextXCord < rightBorder){
+      xCord = nextXCord;
+      yCord = bottomBorder;
+      yVelocity = yVelocity * bounceCoefficient;
+    }
   }
-  
 }
