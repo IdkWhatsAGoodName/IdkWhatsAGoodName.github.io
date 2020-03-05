@@ -57,8 +57,13 @@ function draw() {
     moveBall();
     image(bouncy, xCord, yCord);
     if(mouseX >= xCord && mouseX <= xCord + bouncy.width && mouseY >= yCord && mouseY <= yCord + bouncy.height){
+      console.log("You died");
       noLoop();
     }
+  }
+  else{
+    console.log("You survived");
+    noLoop();
   }
 }
 
