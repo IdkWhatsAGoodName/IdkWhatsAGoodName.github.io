@@ -5,6 +5,8 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+let gameRunning = false;
+
 let bouncy;
 let bounceCoefficient = -1.01;
 
@@ -45,28 +47,54 @@ function setup() {
 
   xVelocity = 0;
   yVelocity = 0;
+
+  mainMenu();
 }
 
 
 function draw() {
+  // game starts when g is pressed
+  if(keyIsPressed && key === "g"){
+    gameRunning = true;
+  }
+
+  //run game
+  if(gameRunning){
+    runGame();
+    // console.log(nextXCord, nextYCord, xVelocity, yVelocity);
+  }
+}
+
+// main function
+function runGame(){
   background(220);
-  // move ball if the ball is not moving too fast
-  if(Math.abs(xVelocity) <= windowWidth && Math.abs(yVelocity) <= windowHeight){
+  if(Math.abs(xVelocity) <= 200 && Math.abs(yVelocity) <= 200){
     gravityX = random(-5,5);
     gravityY = random(-5,5);
     moveBall();
     image(bouncy, xCord, yCord);
     if(mouseX >= xCord && mouseX <= xCord + bouncy.width && mouseY >= yCord && mouseY <= yCord + bouncy.height){
       console.log("You died");
-      noLoop();
+      gameRunning = false;
+      gameReset();
     }
   }
   else{
     console.log("You survived");
-    noLoop();
+    gameRunning = false;
+    gameReset();
   }
 }
 
+// reset game after it ends
+function gameReset(){
+  xVelocity = 0;
+  yVelocity = 0;
+  xCord = windowWidth/2 - bouncy.width/2;
+  yCord = windowHeight/2 - bouncy.height/2;
+}
+
+// ball movement physics
 function moveBall() {
   // gravity accelerates ball
   xVelocity += gravityX;
@@ -76,7 +104,7 @@ function moveBall() {
   nextXCord = xCord + xVelocity;
   nextYCord = yCord + yVelocity;
   
-  // ball not running into a side wall
+  // ball not running into a wall
   if(nextXCord > leftBorder && nextXCord < rightBorder && nextYCord > topBorder && nextYCord < bottomBorder){
     xCord += xVelocity;
     yCord += yVelocity;
@@ -121,4 +149,23 @@ function moveBall() {
       yVelocity = yVelocity * bounceCoefficient;
     }
   }
+
+  else{
+    console.log(nextXCord, nextYCord, xVelocity, yVelocity);
+  }
+}
+
+// resizes window when the window size is changed
+function windowResized(){
+  createCanvas(windowWidth, windowHeight);
+  leftBorder = 0;
+  rightBorder = windowWidth - bouncy.width;
+  topBorder = 0;
+  bottomBorder = windowHeight - bouncy.height;
+}
+
+// displays main menu
+function mainMenu(){
+  textAlign(CENTER, CENTER);
+  text("This game is about dodging the ball. Except the ball gains energy and momentum when it bounces, and the room has a chaotic gravity that changes force and direction every second. Press G to start.", windowWidth/2, windowHeight/2);
 }
