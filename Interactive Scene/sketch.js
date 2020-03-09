@@ -5,6 +5,8 @@
 // Extra for Experts:
 // I made it such that the game's border changes to fit the screen when you resize the window without needing manual refresh, which makes sure the ball always bounces off the edge of the current window
 
+let FONTSIZE = 30;
+
 // game state variables
 let gameNotStarted = true;
 let gameRunning = false;
@@ -57,6 +59,9 @@ function setup() {
 
   xVelocity = 0;
   yVelocity = 0;
+
+  textAlign(CENTER, CENTER);
+  textSize(FONTSIZE);
 }
 
 
@@ -85,6 +90,8 @@ function draw() {
   //run game
   if(gameRunning){
     runGame();
+    console.log(tempXCord, (xCord + xVelocity / yVelocity * (topBorder - yCord)));
+    console.log(tempYCord, (yCord + yVelocity / xVelocity * (rightBorder - xCord)));
   }
   if(victory){
     victoryScreen();
@@ -92,6 +99,7 @@ function draw() {
   if(gameOver){
     deathScreen();
   }
+
 }
 
 // main function
@@ -164,7 +172,7 @@ function moveBall() {
 
   // ball running into ceiling (top wall)
   else if(nextYCord <= topBorder){
-    tempXCord = xCord +  xVelocity / yVelocity * (topBorder - yCord);
+    tempXCord = xCord + xVelocity / yVelocity * (topBorder - yCord);
     if(tempXCord > leftBorder && tempXCord < rightBorder){
       xCord = tempXCord;
       yCord = topBorder;
@@ -195,20 +203,20 @@ function windowResized(){
 // displays main menu
 function mainMenu(){
   background(220);
-  textAlign(CENTER, CENTER);
-  text("This game is about dodging the ball. Except the ball gains energy and momentum when it bounces, and the room has a chaotic gravity that changes force and direction every second. Press G to start.", windowWidth/2, windowHeight/2);
+  text("This game is about dodging the ball. Except the ball gains energy and momentum when it bounces.", windowWidth/2, windowHeight/2 - FONTSIZE);
+  text("Oh and the room has a chaotic gravity that changes force and direction every second.", windowWidth/2, windowHeight/2);
+  text("Press G to start.", windowWidth/2, windowHeight/2 + FONTSIZE)
 }
 
 // displays death screen
 function deathScreen(){
   background(220);
-  textAlign(CENTER, CENTER);
   text("You were hit by the ball and died. Press G to play again.", windowWidth/2, windowHeight/2);
 }
 
 // displays when player wins
 function victoryScreen(){
   background(220);
-  textAlign(CENTER, CENTER);
-  text("The ball gained so much momentum that it broke out of the screen. Congratulations, you survived. Press G to Play again.", windowWidth/2, windowHeight/2);
+  text("The ball gained so much momentum that it broke out of the screen.", windowWidth/2, windowHeight/2);
+  text("Congratulations, you survived. Press G to Play again.", windowWidth/2, windowHeight/2 + FONTSIZE);
 }
