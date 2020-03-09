@@ -17,7 +17,7 @@ let victory = false;
 let bouncy;
 
 // ball physics variables
-let bounceCoefficient = -1.1;
+let bounceCoefficient = -1.01;
 let xCord = 0;
 let yCord = 0;
 
@@ -40,7 +40,7 @@ let topBorder;
 let bottomBorder;
 
 function preload(){
-  // load the ball sprite
+  // load the ball sprite and sound effect
   bouncy = loadImage("assets/bouncy_ball.png");
 }
 
@@ -68,30 +68,22 @@ function setup() {
 function draw() {
   // game starts when g is pressed
   if(keyIsPressed && key === "g"){
-    gameNotStarted = false;
-    gameRunning = true;
-    victory = false;
-    gameOver = false;
+    startGame();
   }
 
-  // q is game dev diagonosis button, when it is pressed the game is paused and variables are printed
-  if(keyIsPressed && key === "q"){
-    gameRunning = false;
-    console.log(xCord, yCord);
-    console.log(nextXCord, nextYCord);
-    console.log(xVelocity, yVelocity);
-    console.log(leftBorder, rightBorder, topBorder, bottomBorder);
+  // game pauses when p is pressed
+  // console.log() commands can be added to print out variable values for diagnosis
+  if(keyIsPressed && key === "p"){
+    pauseGame();
   }
   
-
+  // main menu that displays before game starts
   if(gameNotStarted){
     mainMenu();
   }
   //run game
   if(gameRunning){
     runGame();
-    console.log(tempXCord, (xCord + xVelocity / yVelocity * (topBorder - yCord)));
-    console.log(tempYCord, (yCord + yVelocity / xVelocity * (rightBorder - xCord)));
   }
   if(victory){
     victoryScreen();
@@ -101,6 +93,7 @@ function draw() {
   }
 
 }
+
 
 // main function
 function runGame(){
@@ -126,13 +119,8 @@ function runGame(){
 }
 
 
-// reset game after it ends
-function gameReset(){
-  xVelocity = 0;
-  yVelocity = 0;
-  xCord = windowWidth/2 - bouncy.width/2;
-  yCord = windowHeight/2 - bouncy.height/2;
-}
+
+
 
 // ball movement physics
 function moveBall() {
@@ -151,7 +139,7 @@ function moveBall() {
   }
 
   // ball running into left wall
-  else if (nextXCord < leftBorder){
+  if (nextXCord < leftBorder){
     tempYCord = yCord + yVelocity / xVelocity * (leftBorder - xCord);
     if(tempYCord > topBorder && tempYCord < bottomBorder){
       xCord = leftBorder;
@@ -161,7 +149,7 @@ function moveBall() {
   }
 
   // ball running into right wall
-  else if(nextXCord > rightBorder){
+  if(nextXCord > rightBorder){
     tempYCord = yCord + yVelocity / xVelocity * (rightBorder - xCord);
     if(tempYCord > topBorder && tempYCord < bottomBorder){
       xCord = rightBorder;
@@ -171,7 +159,7 @@ function moveBall() {
   }
 
   // ball running into ceiling (top wall)
-  else if(nextYCord <= topBorder){
+  if(nextYCord <= topBorder){
     tempXCord = xCord + xVelocity / yVelocity * (topBorder - yCord);
     if(tempXCord > leftBorder && tempXCord < rightBorder){
       xCord = tempXCord;
@@ -181,7 +169,7 @@ function moveBall() {
   }
 
   // ball running into floor (bottom wall)
-  else if(nextYCord >= bottomBorder){
+  if(nextYCord >= bottomBorder){
     tempXCord = xCord + xVelocity / yVelocity * (bottomBorder - yCord);
     if(tempXCord > leftBorder && tempXCord < rightBorder){
       xCord = tempXCord;
@@ -207,7 +195,21 @@ function mainMenu(){
   background(220);
   text("This game is about dodging the ball. Except the ball gains energy and momentum when it bounces.", windowWidth/2, windowHeight/2 - FONTSIZE);
   text("Oh and the room has a chaotic gravity that changes force and direction every second.", windowWidth/2, windowHeight/2);
-  text("Press G to start.", windowWidth/2, windowHeight/2 + FONTSIZE)
+  text("Press G to start.", windowWidth/2, windowHeight/2 + FONTSIZE);
+}
+
+//starts the game
+function startGame(){
+  gameNotStarted = false;
+  gameRunning = true;
+  victory = false;
+  gameOver = false;
+}
+
+function pauseGame(){
+  gameRunning = false;
+  text("Game Paused", windowWidth/2, FONTSIZE);
+  text("Press G to continue", windowWidth/2, FONTSIZE*2);
 }
 
 // displays death screen
@@ -221,4 +223,12 @@ function victoryScreen(){
   background(220);
   text("The ball gained so much momentum that it broke out of the screen.", windowWidth/2, windowHeight/2);
   text("Congratulations, you survived. Press G to Play again.", windowWidth/2, windowHeight/2 + FONTSIZE);
+}
+
+// reset game after it ends
+function gameReset(){
+  xVelocity = 0;
+  yVelocity = 0;
+  xCord = windowWidth/2 - bouncy.width/2;
+  yCord = windowHeight/2 - bouncy.height/2;
 }
