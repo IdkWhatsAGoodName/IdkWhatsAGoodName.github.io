@@ -1,31 +1,41 @@
 // Interactive Scene - Definitely Thermodynamic Bouncy Ball
 // Ray Dai
-// Date
+// March 9, 2020
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// I made it such that the game's border changes to fit the screen when you resize the window without needing manual refresh, which makes sure the ball always bounces off the edge of the current window
 
+// game state variables
+let gameNotStarted = true;
 let gameRunning = false;
+let gameOver = false;
+let victory = false;
 
+// ball variable
 let bouncy;
+
+// ball physics variables
 let bounceCoefficient = -1.01;
-
-let gravityX;
-let gravityY;
-
 let xCord = 0;
 let yCord = 0;
-// velocity is split into horizontal and vertical vectors
+
+let nextXCord;
+let nextYCord;
+let tempXCord;
+let tempYCord;
+
 let xVelocity = 0;
 let yVelocity = 0;
 
+// gravity variables
+let gravityX;
+let gravityY;
+
+// borders
 let leftBorder;
 let rightBorder;
 let topBorder;
 let bottomBorder;
-
-let nextXCord;
-let nextYCord;
 
 function preload(){
   // load the ball sprite
@@ -47,21 +57,40 @@ function setup() {
 
   xVelocity = 0;
   yVelocity = 0;
-
-  mainMenu();
 }
 
 
 function draw() {
   // game starts when g is pressed
   if(keyIsPressed && key === "g"){
+    gameNotStarted = false;
     gameRunning = true;
+    victory = false;
+    gameOver = false;
   }
 
+  // q is game dev diagonosis button, when it is pressed the game is paused and variables are printed
+  if(keyIsPressed && key === "q"){
+    gameRunning = false;
+    console.log(xCord, yCord);
+    console.log(nextXCord, nextYCord);
+    console.log(xVelocity, yVelocity);
+    console.log(leftBorder, rightBorder, topBorder, bottomBorder);
+  }
+  
+
+  if(gameNotStarted){
+    mainMenu();
+  }
   //run game
   if(gameRunning){
     runGame();
-    // console.log(nextXCord, nextYCord, xVelocity, yVelocity);
+  }
+  if(victory){
+    victoryScreen();
+  }
+  if(gameOver){
+    deathScreen();
   }
 }
 
@@ -73,18 +102,21 @@ function runGame(){
     gravityY = random(-5,5);
     moveBall();
     image(bouncy, xCord, yCord);
-    if(mouseX >= xCord && mouseX <= xCord + bouncy.width && mouseY >= yCord && mouseY <= yCord + bouncy.height){
-      console.log("You died");
-      gameRunning = false;
-      gameReset();
-    }
+    // player dies when mouse touches ball
+    // if(mouseX >= xCord && mouseX <= xCord + bouncy.width && mouseY >= yCord && mouseY <= yCord + bouncy.height){
+    //   gameOver = true;
+    //   gameRunning = false;
+    //   gameReset();
+    // }
   }
+  // player wins if ball goes too fast and breaks out of screen
   else{
-    console.log("You survived");
+    victory = true;
     gameRunning = false;
     gameReset();
   }
 }
+
 
 // reset game after it ends
 function gameReset(){
@@ -112,29 +144,29 @@ function moveBall() {
 
   // ball running into left wall
   else if (nextXCord < leftBorder){
-    nextYCord = yCord + yVelocity / xVelocity * (leftBorder - xCord);
-    if(nextYCord > topBorder && nextYCord < bottomBorder){
+    tempYCord = yCord + yVelocity / xVelocity * (leftBorder - xCord);
+    if(tempYCord > topBorder && tempYCord < bottomBorder){
       xCord = leftBorder;
-      yCord = nextYCord;
+      yCord = tempYCord;
       xVelocity = xVelocity * bounceCoefficient;
     }
   }
 
   // ball running into right wall
   else if(nextXCord > rightBorder){
-    nextYCord = yCord + yVelocity / xVelocity * (rightBorder - xCord);
-    if(nextYCord > topBorder && nextYCord < bottomBorder){
+    tempYCord = yCord + yVelocity / xVelocity * (rightBorder - xCord);
+    if(tempYCord > topBorder && tempYCord < bottomBorder){
       xCord = rightBorder;
-      yCord = nextYCord;
+      yCord = tempYCord;
       xVelocity = xVelocity * bounceCoefficient;
     }
   }
 
   // ball running into ceiling (top wall)
   else if(nextYCord <= topBorder){
-    nextXCord = xCord +  xVelocity / yVelocity * (topBorder - yCord);
-    if(nextXCord > leftBorder && nextXCord < rightBorder){
-      xCord = nextXCord;
+    tempXCord = xCord +  xVelocity / yVelocity * (topBorder - yCord);
+    if(tempXCord > leftBorder && tempXCord < rightBorder){
+      xCord = tempXCord;
       yCord = topBorder;
       yVelocity = yVelocity * bounceCoefficient;
     }
@@ -142,16 +174,12 @@ function moveBall() {
 
   // ball running into floor (bottom wall)
   else if(nextYCord >= bottomBorder){
-    nextXCord = xCord + xVelocity / yVelocity * (bottomBorder - yCord);
-    if(nextXCord > leftBorder && nextXCord < rightBorder){
-      xCord = nextXCord;
+    tempXCord = xCord + xVelocity / yVelocity * (bottomBorder - yCord);
+    if(tempXCord > leftBorder && tempXCord < rightBorder){
+      xCord = tempXCord;
       yCord = bottomBorder;
       yVelocity = yVelocity * bounceCoefficient;
     }
-  }
-
-  else{
-    console.log(nextXCord, nextYCord, xVelocity, yVelocity);
   }
 }
 
@@ -166,6 +194,21 @@ function windowResized(){
 
 // displays main menu
 function mainMenu(){
+  background(220);
   textAlign(CENTER, CENTER);
   text("This game is about dodging the ball. Except the ball gains energy and momentum when it bounces, and the room has a chaotic gravity that changes force and direction every second. Press G to start.", windowWidth/2, windowHeight/2);
+}
+
+// displays death screen
+function deathScreen(){
+  background(220);
+  textAlign(CENTER, CENTER);
+  text("You were hit by the ball and died. Press G to play again.", windowWidth/2, windowHeight/2);
+}
+
+// displays when player wins
+function victoryScreen(){
+  background(220);
+  textAlign(CENTER, CENTER);
+  text("The ball gained so much momentum that it broke out of the screen. Congratulations, you survived. Press G to Play again.", windowWidth/2, windowHeight/2);
 }
