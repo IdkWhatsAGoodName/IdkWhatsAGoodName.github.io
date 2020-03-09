@@ -17,7 +17,7 @@ let victory = false;
 let bouncy;
 
 // ball physics variables
-let bounceCoefficient = -1.01;
+let bounceCoefficient = -1.1;
 let xCord = 0;
 let yCord = 0;
 
@@ -111,11 +111,11 @@ function runGame(){
     moveBall();
     image(bouncy, xCord, yCord);
     // player dies when mouse touches ball
-    // if(mouseX >= xCord && mouseX <= xCord + bouncy.width && mouseY >= yCord && mouseY <= yCord + bouncy.height){
-    //   gameOver = true;
-    //   gameRunning = false;
-    //   gameReset();
-    // }
+    if(mouseX >= xCord && mouseX <= xCord + bouncy.width && mouseY >= yCord && mouseY <= yCord + bouncy.height){
+      gameOver = true;
+      gameRunning = false;
+      gameReset();
+    }
   }
   // player wins if ball goes too fast and breaks out of screen
   else{
@@ -198,6 +198,8 @@ function windowResized(){
   rightBorder = windowWidth - bouncy.width;
   topBorder = 0;
   bottomBorder = windowHeight - bouncy.height;
+  textAlign(CENTER, CENTER);
+  textSize(FONTSIZE);
 }
 
 // displays main menu
