@@ -3,9 +3,13 @@
 // March 9, 2020
 //
 // Extra for Experts:
-// I made it such that the game's border changes to fit the screen when you resize the window without needing manual refresh, which makes sure the ball always bounces off the edge of the current window
+// program fits the new screen size when the window is resized
+// pause function added
 
 let FONTSIZE = 30;
+// these two constants can be changed to alter the difficulty and how chaotic the game is
+let BOUNCE_COEFFICIENT = -1.01;
+let GRAVITATIONAL_CONSTANT = 5;
 
 // game state variables
 let gameNotStarted = true;
@@ -17,7 +21,6 @@ let victory = false;
 let bouncy;
 
 // ball physics variables
-let bounceCoefficient = -1.01;
 let xCord = 0;
 let yCord = 0;
 
@@ -72,7 +75,6 @@ function draw() {
   }
 
   // game pauses when p is pressed
-  // console.log() commands can be added to print out variable values for diagnosis
   if(keyIsPressed && key === "p"){
     pauseGame();
   }
@@ -98,9 +100,12 @@ function draw() {
 // main function
 function runGame(){
   background(220);
+  // game runs when ball doesn't breach the speed limit
   if(Math.abs(xVelocity) <= 200 && Math.abs(yVelocity) <= 200){
-    gravityX = random(-5,5);
-    gravityY = random(-5,5);
+    // chaotic gravity
+    gravityX = random(-1*GRAVITATIONAL_CONSTANT,GRAVITATIONAL_CONSTANT);
+    gravityY = random(-1*GRAVITATIONAL_CONSTANT,GRAVITATIONAL_CONSTANT);
+    // move and print ball onto screen
     moveBall();
     image(bouncy, xCord, yCord);
     // player dies when mouse touches ball
@@ -144,7 +149,7 @@ function moveBall() {
     if(tempYCord > topBorder && tempYCord < bottomBorder){
       xCord = leftBorder;
       yCord = tempYCord;
-      xVelocity = xVelocity * bounceCoefficient;
+      xVelocity = xVelocity * BOUNCE_COEFFICIENT;
     }
   }
 
@@ -154,7 +159,7 @@ function moveBall() {
     if(tempYCord > topBorder && tempYCord < bottomBorder){
       xCord = rightBorder;
       yCord = tempYCord;
-      xVelocity = xVelocity * bounceCoefficient;
+      xVelocity = xVelocity * BOUNCE_COEFFICIENT;
     }
   }
 
@@ -164,7 +169,7 @@ function moveBall() {
     if(tempXCord > leftBorder && tempXCord < rightBorder){
       xCord = tempXCord;
       yCord = topBorder;
-      yVelocity = yVelocity * bounceCoefficient;
+      yVelocity = yVelocity * BOUNCE_COEFFICIENT;
     }
   }
 
@@ -174,10 +179,15 @@ function moveBall() {
     if(tempXCord > leftBorder && tempXCord < rightBorder){
       xCord = tempXCord;
       yCord = bottomBorder;
-      yVelocity = yVelocity * bounceCoefficient;
+      yVelocity = yVelocity * BOUNCE_COEFFICIENT;
     }
   }
 }
+
+
+
+
+
 
 // resizes window when the window size is changed
 function windowResized(){
@@ -195,7 +205,7 @@ function mainMenu(){
   background(220);
   text("This game is about dodging the ball. Except the ball gains energy and momentum when it bounces.", windowWidth/2, windowHeight/2 - FONTSIZE);
   text("Oh and the room has a chaotic gravity that changes force and direction every second.", windowWidth/2, windowHeight/2);
-  text("Press G to start.", windowWidth/2, windowHeight/2 + FONTSIZE);
+  text("Press G to start. Press P to pause the game at any time.", windowWidth/2, windowHeight/2 + FONTSIZE);
 }
 
 //starts the game
