@@ -11,13 +11,14 @@ let ballArray = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  window.setInterval(addBall,500);
+  window.setInterval(addBall,10);
 }
 
 function draw() {
   background(220);
-  // displayBall();
+  displayBall();
   moveBall();
+  collisionDetection();
 }
 
 function displayBall(){
@@ -32,8 +33,6 @@ function addBall(){
   let thisBall = {
     x: random(width),
     y: random(height),
-    dx: 0,
-    dy: 0,
     radius: random(25,50),
     color: color(random(255), random(255), random(255), random(255)),
   };
@@ -41,5 +40,27 @@ function addBall(){
 }
 
 function moveBall() {
-  
+  for(let i=0; i<ballArray.length; i++){
+    let dx = random(-10, 10);
+    let dy = random(-10, 10);
+    ballArray[i].x += dx;
+    ballArray[i].y += dy;
+  }
+}
+
+function collisionDetection(){
+  for(let i=0; i<ballArray.length; i++){
+    let mouseDistance = dist(mouseX, mouseY, ballArray[i].x, ballArray[i].y);
+    if(mouseDistance <= ballArray[i].radius){
+      ballArray.splice(i,1);
+    }
+  }
+}
+
+// function mousePressed(){
+//   collisionDetection();
+// }
+
+function windowResized(){
+  setup();
 }
