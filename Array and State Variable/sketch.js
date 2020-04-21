@@ -210,7 +210,7 @@ function windowResized(){
 // displays main menu
 function mainMenu(){
   background(220);
-  text("Welcome to the ball dodging game v2.0, where you try avoiding the balls with your mouse.", windowWidth/2, windowHeight/2 - FONTSIZE);
+  text("Welcome to the ball dodging game v2.0, where you try dodging the balls with your mouse for as long as you can.", windowWidth/2, windowHeight/2 - FONTSIZE);
   text("This time balls bounce following the laws of physics, but there's more than one, and they are coming for you.", windowWidth/2, windowHeight/2);
   text("Press G to start. Press P to pause the game at any time. Press M to add more balls, if you insist.", windowWidth/2, windowHeight/2 + FONTSIZE);
 }
