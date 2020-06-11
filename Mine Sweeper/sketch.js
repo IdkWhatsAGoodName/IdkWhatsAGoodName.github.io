@@ -23,6 +23,7 @@ function draw() {
   if(gameRunning){
     background(220);
     drawGrids();
+    startGame();
   }
 }
 
@@ -55,7 +56,7 @@ function startGame(){
     // assign 10 grids as mines at random
     let n = Math.floor(Math.random() * 100);
     if(choices.includes(n) !== 0){
-      grids[Math.floor(n/10)-1][n%10-1].mine = true;
+      grids[Math.floor(n/10)][n%10].mine = true;
       choices.push(n);
     }
   }
@@ -72,20 +73,20 @@ function drawGrids(){
 function mouseClicked(){
   if(mouseX <= 200 && mouseY <= 200){
     // check which grid is clicked and record it
-    let rowClicked = Math.floor(mouseY / SQUARE_SIZE) - 1;
-    let columnClicked = Math.floor(mouseX / SQUARE_SIZE) - 1;
+    let rowClicked = Math.floor(mouseY / SQUARE_SIZE);
+    let columnClicked = Math.floor(mouseX / SQUARE_SIZE);
     let clickedSquare = grids[rowClicked][columnClicked];
     // if the grid hasn't been clicked or flagged
     if(clickedSquare.clicked === false && clickedSquare.flagged === false){
       // and the "flag" key (alt) isn't pressed
       if(keyIsDown(ALT) === false){
         // and the grid clicked is a mine, you lose 
-        if(grids[i].mine === true){
+        if(clickedSquare.mine === true){
           gameRunning = false;
           revealMines();
         }
         else{
-          grids[i].clicked = true;
+          clickedSquare.clicked = true;
         }
       }
     }
