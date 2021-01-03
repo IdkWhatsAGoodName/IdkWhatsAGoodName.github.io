@@ -1,40 +1,49 @@
-// Project Title
-// Your Name
-// Date
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+//minesweeper
+//Ray Dai
 
 let SQUARE_SIZE = 20;
 
+//grids stores as [row][column]
 let grids = [];
 
-let xDimensions = 10;
-let yDimensions = 10;
+//game size is 10x10 for now
+let gridWidth = 10;
+let gridHeight = 10;
 
+// the coordinate of where the grid begins
+let gridX;
+let gridY;
+
+//let game run when it opens, will worry about UI later
 let gameRunning = true;
 
 
 function setup() {
-  createCanvas(200, 200);
+  createCanvas(1000, 600);
+  gridX = width/2-gridWidth*SQUARE_SIZE/2;
+  gridY = height/2-gridHeight*SQUARE_SIZE/2;
 }
 
+//main function
 function draw() {
   if(gameRunning){
     background(220);
-    drawGrids();
+    drawGrids(gridX, gridY, gridWidth, gridHeight);
     startGame();
   }
 }
 
-// create a button
+// create a button for a grid
 function makeButton(m, n){
   let button = {
-    x: m,
-    y: n,
+    row: m,
+    column: n,
+    xCord: n * SQUARE_SIZE + gridX,
+    yCord: m * SQUARE_SIZE + gridY,
     clicked: false,
     flagged: false,
     mine: false,
+    mineCount: 0,
   };
   return button;
 }
@@ -43,38 +52,53 @@ function makeButton(m, n){
 function startGame(){
   grids = [];
   // make a button for each grid
-  for(let i = 0; i < 10; i++){
+  for(let i = 0; i < gridHeight; i++){
     let row = [];
-    for(let j = 0; j < 10; j++){
-      row.push(makeButton(i*SQUARE_SIZE, j*SQUARE_SIZE));
+    for(let j = 0; j < gridWidth; j++){
+      row.push(makeButton(i, j));
     }
     grids.push(row);
   }
+  chooseMines(10);
+}
+
+// randomize mines
+function chooseMines(x){
   let choices = [];
-  // randomize mines
-  while(choices.length < 10){
+  while(choices.length < x){
     // assign 10 grids as mines at random
-    let n = Math.floor(Math.random() * 100);
-    if(choices.includes(n) !== 0){
-      grids[Math.floor(n/10)][n%10].mine = true;
-      choices.push(n);
+    let m = Math.floor(Math.random() * 100);
+    if(choices.includes(m) !== 0){
+      let mine = grids[Math.floor(m/10)][m%10];
+      mine.mine = true;
+      choices.push(m);
+      // increase mine count of neighboring squares by 1
+      let neighbors = adjacentSquares(mine);
+      while (neighbors.length() > 0){
+        nextSquare = neighbors.pop();
+        grids[nextSquare[0]][nextSquare[1]].mineCount += 1;
+      }
     }
   }
 }
-
 // draws grid lines
-function drawGrids(){
-  for(let i = 0; i <= width; i += SQUARE_SIZE){
-    line(i, 0, i, width);
-    line(0, i, 200, i);
+// (x, y) is the coords for where to draw the grid with size w*h grids
+function drawGrids(x, y, w, h){
+  //draw vertical lines
+  for(let i = 0; i <= w; i++){
+    line(x + i * SQUARE_SIZE, y, x + i * SQUARE_SIZE, y + h * SQUARE_SIZE);
+  }
+  //draw horizontal lines
+  for(let j = 0; j <= h; j++){
+    line(x, y + j * SQUARE_SIZE, x + w * SQUARE_SIZE, y + j * SQUARE_SIZE);
   }
 }
 
 function mouseClicked(){
-  if(mouseX <= 200 && mouseY <= 200){
+  if(mouseInRange()){
     // check which grid is clicked and record it
-    let rowClicked = Math.floor(mouseY / SQUARE_SIZE);
-    let columnClicked = Math.floor(mouseX / SQUARE_SIZE);
+    let rowClicked = Math.floor((mouseY - gridY) / SQUARE_SIZE);
+    let columnClicked = Math.floor((mouseX - gridX) / SQUARE_SIZE);
     let clickedSquare = grids[rowClicked][columnClicked];
     // if the grid hasn't been clicked or flagged
     if(clickedSquare.clicked === false && clickedSquare.flagged === false){
@@ -101,12 +125,29 @@ function keyPressed(){
 
 // show location of mines on screen, only used when player loses
 function revealMines(){
-  for(let i = 0; i < grids.length; i++){
-    for(let j = 0; j < grids[i].length; j++){
+  for(let i = 0; i < gridHeight; i++){
+    for(let j = 0; j < gridWidth; j++){
       if(grids[i][j].mine){
-        line(grids[i][j].x, grids[i][j].y, grids[i][j].x + SQUARE_SIZE, grids[i][j].y + SQUARE_SIZE);
-        line(grids[i][j].x + SQUARE_SIZE, grids[i][j].y, grids[i][j].x, grids[i][j].y + SQUARE_SIZE);
+        line(grids[i][j].xCord, grids[i][j].yCord, grids[i][j].xCord + SQUARE_SIZE, grids[i][j].yCord + SQUARE_SIZE);
+        line(grids[i][j].xCord + SQUARE_SIZE, grids[i][j].yCord, grids[i][j].xCord, grids[i][j].yCord + SQUARE_SIZE);
       }
     }
   }
+}
+
+//checks if mouse is in the game area
+function mouseInRange(){
+  return (mouseX > gridX && mouseY > gridY && mouseX < gridX + gridWidth*SQUARE_SIZE && mouseY < gridY + gridHeight*SQUARE_SIZE);
+}
+
+function adjacentSquares(square){
+  squares = []
+  for (let i = -1; i <= 1; i++){
+    for (let j = -1; j <= 1; j++){
+      if(i !== 0 || j !== 0){
+        squares.push([square.row + i, square.column + j]);
+      }
+    }
+  }
+  return squares;
 }
