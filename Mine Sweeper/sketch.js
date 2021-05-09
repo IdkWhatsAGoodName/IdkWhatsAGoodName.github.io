@@ -74,8 +74,8 @@ function chooseMines(x){
       choices.push(m);
       // increase mine count of neighboring squares by 1
       let neighbors = adjacentSquares(mine);
-      while (neighbors.length() > 0){
-        nextSquare = neighbors.pop();
+      while (neighbors.length > 0){
+        let nextSquare = neighbors.pop();
         grids[nextSquare[0]][nextSquare[1]].mineCount += 1;
       }
     }
@@ -120,6 +120,9 @@ function mouseClicked(){
 function keyPressed(){
   if(key === "g"){
     startGame();
+  }
+  if(key === "s"){
+    revealMines();
   }
 }
 
